@@ -1,7 +1,7 @@
 {
-  "name": "com.hian.package-smaple",
+  "name": "com.creator-hian.unity.external-program-integration",
   "version": "0.0.1",
-  "displayName": "Hian Package Sample",
+  "displayName": "Hian Unity External Program Integration",
   "unity": "2022.3",
   "keywords": [
     "Hian"
@@ -11,6 +11,6 @@
     "email": "shahian12@gmail.com",
     "url": "https://github.com/creator-hian"
   },
-  "description": "Unity Package 작성을 위한 Base Repository입니다.",
+  "description": "Unity 외부 프로그램 통합을 위한 패키지입니다.",
   "dependencies": {}
 }
