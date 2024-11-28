@@ -9,6 +9,10 @@ namespace FAMOZ.ExternalProgram.Core
     /// </summary>
     public interface IExternalProgram : IDisposable
     {
+        // 상수는 인터페이스에 정의
+        public const int PROCESS_NOT_STARTED = -1;
+        public const int PROCESS_RUNNING = -2;
+
         #region Properties
         /// <summary>
         /// 프로그램의 현재 상태
@@ -21,9 +25,12 @@ namespace FAMOZ.ExternalProgram.Core
         ProgramConfig Config { get; }
         
         /// <summary>
-        /// 프로세스 종료 코드 (null if not exited)
+        /// 프로세스 종료 코드를 반환합니다.
+        /// PROCESS_NOT_STARTED: 프로세스가 시작되지 않음
+        /// PROCESS_RUNNING: 프로세스가 실행 중
+        /// 그 외: 실제 프로세스 종료 코드
         /// </summary>
-        int? ExitCode { get; }
+        int ExitCode { get; }
         
         /// <summary>
         /// 프로그램과의 연결 상태
