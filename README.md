@@ -1,5 +1,5 @@
-# Unity-Package-Base
-Unity Package 작성을 위한 Base Repository입니다.
+# Unity-ExternalProgram-Integration
+Unity 외부 프로그램 통합을 위한 패키지입니다.
 
 
 ## 개요
