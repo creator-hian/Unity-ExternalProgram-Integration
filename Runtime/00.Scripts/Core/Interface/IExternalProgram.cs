@@ -94,7 +94,6 @@ namespace FAMOZ.ExternalProgram.Core
         /// 리소스 정리
         /// </summary>
         Task CleanupAsync();
-#endif
         #endregion
     }
 } 
