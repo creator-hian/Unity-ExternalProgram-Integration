@@ -1,106 +1,58 @@
 using System;
-using System.Net;
 using System.Threading.Tasks;
+using FAMOZ.ExternalProgram.Core.Communication;
 
 namespace FAMOZ.ExternalProgram.Core
 {
     /// <summary>
-    /// 외부 프로그램과의 통신을 위한 인터페이스
+    /// 외부 프로그램과의 통신을 위한 인터페이스입니다.
+    /// 기본 프로세스 관리 기능을 확장하여 통신 기능을 추가합니다.
     /// </summary>
-    public interface IExternalProgram : IDisposable
+    public interface IExternalProgram : IProcessManager
     {
-        // 상수는 인터페이스에 정의
-        public const int PROCESS_NOT_STARTED = -1;
-        public const int PROCESS_RUNNING = -2;
-
-        #region Properties
-        /// <summary>
-        /// 프로그램의 현재 상태
-        /// </summary>
-        ProgramState State { get; }
-        
-        /// <summary>
-        /// 프로그램 설정
-        /// </summary>
-        ProgramConfig Config { get; }
-        
-        /// <summary>
-        /// 프로세스 종료 코드를 반환합니다.
-        /// PROCESS_NOT_STARTED: 프로세스가 시작되지 않음
-        /// PROCESS_RUNNING: 프로세스가 실행 중
-        /// 그 외: 실제 프로세스 종료 코드
-        /// </summary>
-        int ExitCode { get; }
-        
-        /// <summary>
-        /// 프로그램과의 연결 상태
-        /// </summary>
-        bool IsConnected { get; }
-        
-        /// <summary>
-        /// 프로그램의 IP 엔드포인트
-        /// </summary>
-        IPEndPoint EndPoint { get; }
+        #region Constants
+        /// <summary>프로세스가 시작되지 않은 상태를 나타내는 종료 코드</summary>
+        const int PROCESS_NOT_STARTED = -1;
+        /// <summary>프로세스가 실행 중임을 나타내는 종료 코드</summary>
+        const int PROCESS_RUNNING = -2;
         #endregion
 
-        #region Events
-        /// <summary>
-        /// 프로그램 상태 변경 이벤트
-        /// </summary>
+        #region Communication Properties
+        /// <summary>통신 프로토콜</summary>
+        ICommunicationProtocol CommunicationProtocol { get; }
+        
+        /// <summary>통신 연결 상태</summary>
+        bool IsConnected { get; }
+        #endregion
+
+        #region Communication Control
+        /// <summary>통신을 비동기적으로 연결합니다.</summary>
+        Task<bool> ConnectAsync();
+        
+        /// <summary>통신을 비동기적으로 종료합니다.</summary>
+        Task DisconnectAsync();
+        
+        /// <summary>통신을 동기적으로 연결합니다.</summary>
+        bool Connect();
+        
+        /// <summary>통신을 동기적으로 종료합니다.</summary>
+        void Disconnect();
+        #endregion
+
+        #region Communication Events
+        /// <summary>프로그램 상태 변경 이벤트</summary>
         event Action<ProgramState> OnStateChanged;
         
-        /// <summary>
-        /// 프로그램으로부터 출력 수신 이벤트
-        /// </summary>
-        event Action<string> OnOutputReceived;
-        
-        /// <summary>
-        /// 에러 발생 이벤트
-        /// </summary>
+        /// <summary>프로그램 에러 발생 이벤트</summary>
         event Action<ProgramError> OnError;
         #endregion
 
-        #region Methods
-        /// <summary>
-        /// 프로그램 시작
-        /// </summary>
-        Task StartAsync();
-        
-        /// <summary>
-        /// 프로그램 정지
-        /// </summary>
-        Task StopAsync();
-        
-        /// <summary>
-        /// 프로그램 재시작
-        /// </summary>
-        Task RestartAsync();
-        
-        /// <summary>
-        /// 프로그램 실행 상태 확인
-        /// </summary>
-        Task<bool> IsRunningAsync();
-        
-        /// <summary>
-        /// 명령어 전송
-        /// </summary>
-        /// <param name="command">전송할 명령어</param>
+        #region Commands
+        /// <summary>명령어를 비동기적으로 전송합니다.</summary>
         Task SendCommandAsync(string command);
         
-        /// <summary>
-        /// 응답 대기
-        /// </summary>
-        /// <param name="expectedPattern">기대하는 응답 패턴</param>
-        /// <param name="timeout">타임아웃 시간</param>
-        Task<string> WaitForResponseAsync(
-            string expectedPattern, 
-            TimeSpan? timeout = null
-        );
-        
-        /// <summary>
-        /// 리소스 정리
-        /// </summary>
-        Task CleanupAsync();
+        /// <summary>명령어를 비동기적으로 기다립니다.</summary>
+        Task<string> WaitForResponseAsync(string expectedPattern, TimeSpan? timeout = null);
         #endregion
     }
 } 
