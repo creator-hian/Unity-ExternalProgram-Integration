@@ -1,6 +1,5 @@
-# 변경 로그
-
-이 문서는 Unity-ExternalProgram-Integration 패키지의 모든 주요 변경 사항을 기록합니다.
+# Changelog
+All notable changes to this project will be documented in this file.
 
 ## 버전 관리 정책
 
@@ -9,6 +8,38 @@
   - **Major**: 호환성이 깨지는 변경
   - **Minor**: 하위 호환성 있는 기능 추가
   - **Patch**: 하위 호환성 있는 버그 수정
+
+
+## [0.1.0] - 2024-11-30
+### Added
+- 기본 외부 프로그램 통합 기능 구현
+  - 프로세스 시작/종료 관리
+  - 비동기 통신 지원
+  - 에러 처리 및 로깅
+- Mock 객체를 통한 테스트 프레임워크 구축
+  - MockExternalProgram
+  - MockCommunicationProtocol
+  - MockLogger
+- 단위 테스트 구현
+  - 프로세스 생명주기 테스트
+  - 상태 전이 테스트
+  - 에러 처리 테스트
+  - 통신 프로토콜 테스트
+- TODO 리스트 작성
+  - 향후 개선사항 및 테스트 시나리오 정리
+  - 코드 개선 포인트 식별
+
+### Changed
+- 비동기 작업 처리 방식 개선
+- 에러 처리 로직 강화
+- 테스트 코드 구조화
+
+### Fixed
+- 프로세스 종료 시 리소스 정리 문제
+- 비동기 작업 취소 처리 개선
+- 테스트의 타임아웃 처리 수정
+
+
 
 ## [0.0.1] - 2024-11-30
 ### 추가됨
