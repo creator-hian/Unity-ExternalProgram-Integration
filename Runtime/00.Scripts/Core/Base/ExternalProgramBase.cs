@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
+using FAMOZ.ExternalProgram.Core.Communication;
+using System.Threading;
 
 namespace FAMOZ.ExternalProgram.Core
 {
@@ -14,203 +16,129 @@ namespace FAMOZ.ExternalProgram.Core
         protected Process _process;
         protected readonly ProgramConfig _config;
         protected ProgramState _currentState = ProgramState.NotStarted;
-        protected DateTime? _startTime;
-        protected DateTime? _exitTime;
-        protected int _failedAttempts;
-        protected DateTime _lastResponseTime;
+        protected readonly ILogger _logger;
+        protected readonly ICommunicationProtocol _protocol;
+        private bool _disposed = false;
         #endregion
 
-        #region Properties
-        public ProgramState State => _currentState;
-        public ProgramConfig Config => _config;
-
-        public int ExitCode 
-        {
-            get 
-            {
-                if (_process == null)
-                {
-                    return IExternalProgram.PROCESS_NOT_STARTED;
-                }
-                
-                if (!_process.HasExited)
-                {
-                    return IExternalProgram.PROCESS_RUNNING;
-                }
-                
-                return _process.ExitCode;
-            }
-        }
-        
-        public abstract bool IsConnected { get; }
-        
-        public IPEndPoint EndPoint 
-        {
-            get 
-            {
-                var address = IPAddress.Parse(ExternalProgramConstants.LOCAL_ADDRESS);
-                return new IPEndPoint(address, Config.PortNumber);
-            }
-        }
-        
-        public bool HasExited 
-        {
-            get 
-            {
-                if (_process == null)
-                {
-                    return true;
-                }
-                return _process.HasExited;
-            }
-        }
-        
-        public DateTime? StartTime => _startTime;
-        public DateTime? ExitTime => _exitTime;
-        public TimeSpan LastResponseTime => DateTime.Now - _lastResponseTime;
-        public int FailedAttempts => _failedAttempts;
-        public bool HasStarted => _startTime.HasValue;
-        public bool HasCompleted => _exitTime.HasValue;
-        
-        public TimeSpan RunningTime 
-        {
-            get 
-            {
-                if (!_startTime.HasValue)
-                {
-                    return TimeSpan.Zero;
-                }
-                
-                if (_exitTime.HasValue)
-                {
-                    return _exitTime.Value - _startTime.Value;
-                }
-                
-                return DateTime.Now - _startTime.Value;
-            }
-        }
-        #endregion
-
-        #region Events
-        public event Action<ProgramState> OnStateChanged;
-        public event Action<string> OnOutputReceived;
-        public event Action<ProgramError> OnError;
-        #endregion
-
-        protected ExternalProgramBase(ProgramConfig config)
+        protected ExternalProgramBase(
+            ProgramConfig config,
+            ICommunicationProtocol protocol,
+            ILogger logger = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _protocol = protocol ?? throw new ArgumentNullException(nameof(protocol));
+            _logger = logger ?? new UnityLogger();
         }
 
-        #region Protected Methods
-        /// <summary>
-        /// 프로그램 상태를 업데이트하고 이벤트를 발생시킵니다.
-        /// </summary>
-        protected virtual void UpdateState(ProgramState newState)
-        {
-            if (_currentState == newState) 
-            {
-                return;
-            }
-            
-            _currentState = newState;
-            if (OnStateChanged != null)
-            {
-                OnStateChanged(newState);
-            }
-            
-            if (newState == ProgramState.Running)
-            {
-                _startTime = DateTime.Now;
-                _exitTime = null;  // 재시작 시 종료 시간 초기화
-            }
-            else if (newState == ProgramState.Stopped)
-            {
-                _exitTime = DateTime.Now;
-            }
-        }
+        #region IProcessManager Implementation
+        public virtual string ProcessName => _config.ProcessName;
+        public virtual string ExecutablePath => _config.ExecutablePath;
+        public virtual string Arguments => _config.Arguments;
+        public virtual bool IsRunning => _process != null && !_process.HasExited;
 
-        /// <summary>
-        /// 에러를 발생시키고 로깅합니다.
-        /// </summary>
-        protected virtual void RaiseError(string message, ErrorType type, Exception ex = null)
-        {
-            var error = new ProgramError(message, type, ex);
-            if (OnError != null)
-            {
-                OnError(error);
-            }
-            UnityEngine.Debug.LogError($"ExternalProgram Error: {error.Message}");
-        }
+        public abstract Task<bool> StartAsync(CancellationToken cancellationToken = default);
+        public abstract Task<bool> StopAsync();
+        public abstract bool Start();
+        public abstract bool Stop();
 
-        /// <summary>
-        /// 프로세스 출력을 처리하고 이벤트를 발생시킵니다.
-        /// </summary>
-        protected virtual void HandleProcessOutput(string output)
-        {
-            if (string.IsNullOrEmpty(output)) 
-            {
-                return;
-            }
-            
-            if (OnOutputReceived != null)
-            {
-                OnOutputReceived(output);
-            }
-            _lastResponseTime = DateTime.Now;
-        }
+        public event Action<string> OnProcessOutput;
+        public event Action<string> OnProcessError;
+        public event Action<int> OnProcessExit;
         #endregion
 
-        #region IExternalProgram Implementation
-        public abstract Task StartAsync();
-        public abstract Task StopAsync();
-        public abstract Task<bool> IsRunningAsync();
+        #region IExternalProgram Additional Implementation
+        public abstract bool IsConnected { get; }
+        public ICommunicationProtocol CommunicationProtocol => _protocol;
+
+        public abstract Task<bool> ConnectAsync();
+        public abstract Task DisconnectAsync();
+        public abstract bool Connect();
+        public abstract void Disconnect();
+
+        public event Action<ProgramState> OnStateChanged;
+        public event Action<ProgramError> OnError;
+
         public abstract Task SendCommandAsync(string command);
         public abstract Task<string> WaitForResponseAsync(string expectedPattern, TimeSpan? timeout = null);
-        
-        public virtual async Task RestartAsync()
+        #endregion
+
+        // 이벤트 발생을 위한 protected 메서드들
+        protected virtual void RaiseStateChanged(ProgramState state)
         {
-            await StopAsync();
-            await StartAsync();
+            OnStateChanged?.Invoke(state);
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task UpdateConfigAsync(ProgramConfig newConfig)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        protected virtual void RaiseError(ProgramError error)
         {
-            if (State == ProgramState.Running)
-                throw new InvalidOperationException("Cannot update config while program is running");
-                
-            // 설정 업데이트 로직
+            OnError?.Invoke(error);
         }
 
-        public virtual async Task CleanupAsync()
+        protected virtual void RaiseProcessOutput(string output)
         {
-            try
+            OnProcessOutput?.Invoke(output);
+        }
+
+        protected virtual void RaiseProcessError(string error)
+        {
+            OnProcessError?.Invoke(error);
+        }
+
+        protected virtual void RaiseProcessExit(int exitCode)
+        {
+            OnProcessExit?.Invoke(exitCode);
+        }
+
+        // ... 나머지 유틸리티 메서드들
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
             {
-                if (_process == null)
+                if (disposing)
                 {
-                    return;
+                    _protocol?.Dispose();
+                    if (_process != null)
+                    {
+                        if (!_process.HasExited)
+                        {
+                            try
+                            {
+                                _process.Kill();
+                                _process.WaitForExit();
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError($"Error during process cleanup: {ex.Message}");
+                            }
+                        }
+                        _process.Dispose();
+                        _process = null;
+                    }
                 }
 
-                if (!_process.HasExited)
-                {
-                    await StopAsync();
-                }
-                    
-                _process.Dispose();
-                _process = null;
-            }
-            catch (Exception ex)
-            {
-                RaiseError("Cleanup failed", ErrorType.ProcessStop, ex);
+                _disposed = true;
             }
         }
 
         public void Dispose()
         {
-            CleanupAsync().Wait();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
-        #endregion
+
+        ~ExternalProgramBase()
+        {
+            Dispose(false);
+        }
+
+        public virtual async Task<bool> RestartAsync(CancellationToken cancellationToken = default)
+        {
+            if (IsRunning)
+            {
+                await StopAsync();
+            }
+            return await StartAsync(cancellationToken);
+        }
     }
 } 
