@@ -1,4 +1,4 @@
-namespace FAMOZ.ExternalProgram.Core.Serialization
+namespace Hian.ExternalProgram.Core.Serialization
 {
     public interface IJsonSerializer
     {

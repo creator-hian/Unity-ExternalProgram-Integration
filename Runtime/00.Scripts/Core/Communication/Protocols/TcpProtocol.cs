@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FAMOZ.ExternalProgram.Core.Communication
+namespace Hian.ExternalProgram.Core.Communication
 {
     public class TcpProtocol : ICommunicationProtocol
     {

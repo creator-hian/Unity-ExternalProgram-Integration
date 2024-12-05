@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using FAMOZ.ExternalProgram.Core;
+using Hian.ExternalProgram.Core;
 using System;
 
 namespace Configuration

@@ -2,15 +2,16 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Linq;
+using UnityEngine;
 
-namespace FAMOZ.ExternalProgram.Core.Manager
+namespace Hian.ExternalProgram.Core.Manager
 {
     /// <summary>
     /// 외부 프로그램들을 관리하는 싱글톤 매니저 클래스입니다.
     /// </summary>
     public class ExternalProgramManager : IDisposable
     {
-        private static readonly Lazy<ExternalProgramManager> _instance = 
+        private static readonly Lazy<ExternalProgramManager> _instance =
             new Lazy<ExternalProgramManager>(() => new ExternalProgramManager());
 
         /// <summary>
@@ -19,23 +20,11 @@ namespace FAMOZ.ExternalProgram.Core.Manager
         public static ExternalProgramManager Instance => _instance.Value;
 
         private readonly ConcurrentDictionary<string, IExternalProgram> _programs;
-        private ILogger _logger;
 
         // 외부에서 인스턴스화 방지
         private ExternalProgramManager()
         {
             _programs = new ConcurrentDictionary<string, IExternalProgram>();
-            _logger = new UnityLogger();
-        }
-
-        /// <summary>
-        /// 로거를 설정합니다.
-        /// </summary>
-        public void SetLogger(ILogger logger)
-        {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-            _logger = logger;
         }
 
         /// <summary>
@@ -48,7 +37,9 @@ namespace FAMOZ.ExternalProgram.Core.Manager
 
             bool added = _programs.TryAdd(program.ProcessName, program);
             if (added)
-                _logger.Log($"Program registered: {program.ProcessName}");
+            {
+                Debug.Log($"Program registered: {program.ProcessName}");
+            }
             return added;
         }
 
@@ -64,7 +55,10 @@ namespace FAMOZ.ExternalProgram.Core.Manager
 
                 bool removed = _programs.TryRemove(programName, out _);
                 if (removed)
-                    _logger.Log($"Program unregistered: {programName}");
+                {
+                    Debug.Log($"Program unregistered: {programName}");
+                }
+
                 return removed;
             }
             return false;
@@ -86,7 +80,7 @@ namespace FAMOZ.ExternalProgram.Core.Manager
         {
             var stopTasks = _programs.Values.Select(p => p.StopAsync());
             await Task.WhenAll(stopTasks);
-            
+
             foreach (var program in _programs.Values)
             {
                 program.Dispose();

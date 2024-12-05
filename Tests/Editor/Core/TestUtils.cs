@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 
-namespace FAMOZ.ExternalProgram.Tests.Editor.Core
+namespace Hian.ExternalProgram.Tests.Editor.Core
 {
     public static class TestUtils
     {

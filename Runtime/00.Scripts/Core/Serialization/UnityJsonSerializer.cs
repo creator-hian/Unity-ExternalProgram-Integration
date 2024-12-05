@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FAMOZ.ExternalProgram.Core.Serialization
+namespace Hian.ExternalProgram.Core.Serialization
 {
     public class UnityJsonSerializer : IJsonSerializer
     {

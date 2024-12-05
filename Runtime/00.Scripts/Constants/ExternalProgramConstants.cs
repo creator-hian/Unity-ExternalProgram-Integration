@@ -1,4 +1,4 @@
-namespace FAMOZ.ExternalProgram
+namespace Hian.ExternalProgram
 {
     public static class ExternalProgramConstants
     {

@@ -1,6 +1,6 @@
 using System;
-using FAMOZ.ExternalProgram.Core;
-using FAMOZ.ExternalProgram.Tests.Editor.Mocks;
+using Hian.ExternalProgram.Core;
+using Hian.ExternalProgram.Tests.Editor.Mocks;
 using Mocks;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -11,14 +11,12 @@ namespace Process
     public class ProcessTests
     {
         private MockExternalProgram _program;
-        private MockLogger _logger;
         private MockCommunicationProtocol _protocol;
         private ProgramConfig _config;
 
         [SetUp]
         public void Setup()
         {
-            _logger = new MockLogger();
             _protocol = new MockCommunicationProtocol();
             _config = new ProgramConfig(
                 processName: "TestProcess",
@@ -26,8 +24,7 @@ namespace Process
             );
             _program = new MockExternalProgram(
                 _config,
-                _protocol,
-                _logger
+                _protocol
             );
         }
 

@@ -1,4 +1,4 @@
-namespace FAMOZ.ExternalProgram.Core.Communication.Protocols
+namespace Hian.ExternalProgram.Core.Communication.Protocols
 {
     public class TcpProtocolProvider : ICommunicationProtocolProvider
     {

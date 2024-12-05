@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace FAMOZ.ExternalProgram.Core.Communication
+namespace Hian.ExternalProgram.Core.Communication
 {
     /// <summary>
     /// 통신 프로토콜 생성을 담당하는 팩토리 클래스입니다.
