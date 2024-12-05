@@ -1,4 +1,4 @@
-namespace FAMOZ.ExternalProgram.Core.Communication
+namespace Hian.ExternalProgram.Core.Communication
 {
     /// <summary>
     /// 통신 프로토콜 제공자 인터페이스입니다.

@@ -1,4 +1,4 @@
-namespace FAMOZ.ExternalProgram.Tests.Editor.Core
+namespace Hian.ExternalProgram.Tests.Editor.Core
 {
     public static class TestConstants
     {

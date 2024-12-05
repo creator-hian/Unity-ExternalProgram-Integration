@@ -1,10 +1,10 @@
 using NUnit.Framework;
 using System.Threading.Tasks;
-using FAMOZ.ExternalProgram.Core;
-using FAMOZ.ExternalProgram.Tests.Editor.Mocks;
+using Hian.ExternalProgram.Core;
+using Hian.ExternalProgram.Tests.Editor.Mocks;
 using System.Collections.Generic;
 using System.Threading;
-using FAMOZ.ExternalProgram.Tests.Editor.Core;
+using Hian.ExternalProgram.Tests.Editor.Core;
 using Mocks;
 using System;
 
@@ -15,14 +15,12 @@ namespace ExternalProgram
     public class ExternalProgramTests
     {
         private MockExternalProgram _program;
-        private MockLogger _logger;
         private MockCommunicationProtocol _protocol;
         private ProgramConfig _config;
 
         [SetUp]
         public void Setup()
         {
-            _logger = new MockLogger();
             _protocol = new MockCommunicationProtocol();
             _config = new ProgramConfig(
                 processName: "TestProcess",
@@ -30,7 +28,7 @@ namespace ExternalProgram
                 arguments: "-test",
                 portNumber: 12345
             );
-            _program = new MockExternalProgram(_config, _protocol, _logger);
+            _program = new MockExternalProgram(_config, _protocol);
         }
 
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
@@ -147,9 +145,7 @@ namespace ExternalProgram
             
             
                 Assert.That(result, Is.False, "Operation should return false when cancelled");
-                Assert.That(_program.IsRunning, Is.False, "Program should not be running after cancellation");
-                Assert.That(_logger.WarningLogs, Has.Some.Contains("cancelled"), 
-                    $"Expected warning log about cancellation but got: [{string.Join(", ", _logger.WarningLogs)}]");
+            Assert.That(_program.IsRunning, Is.False, "Program should not be running after cancellation");
         }
 
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
@@ -158,7 +154,6 @@ namespace ExternalProgram
             var result = await _program.StopAsync();
             
             Assert.That(result, Is.False);
-            Assert.That(_logger.WarningLogs, Is.Not.Empty);
         }
 
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]

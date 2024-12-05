@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace FAMOZ.ExternalProgram.Core.Communication
+namespace Hian.ExternalProgram.Core.Communication
 {
     public interface ICommunicationProtocol : IDisposable
     {

@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using FAMOZ.ExternalProgram.Core.Communication;
+using Hian.ExternalProgram.Core.Communication;
 
-namespace FAMOZ.ExternalProgram.Tests.Editor.Mocks
+namespace Hian.ExternalProgram.Tests.Editor.Mocks
 {
     public class MockCommunicationProtocol : ICommunicationProtocol
     {

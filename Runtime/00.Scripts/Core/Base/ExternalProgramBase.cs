@@ -1,11 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.Net;
 using System.Threading.Tasks;
-using FAMOZ.ExternalProgram.Core.Communication;
+using Hian.ExternalProgram.Core.Communication;
 using System.Threading;
 
-namespace FAMOZ.ExternalProgram.Core
+namespace Hian.ExternalProgram.Core
 {
     /// <summary>
     /// 외부 프로그램 통신을 위한 기본 추상 클래스입니다.
@@ -16,19 +15,16 @@ namespace FAMOZ.ExternalProgram.Core
         protected Process _process;
         protected readonly ProgramConfig _config;
         protected ProgramState _currentState = ProgramState.NotStarted;
-        protected readonly ILogger _logger;
         protected readonly ICommunicationProtocol _protocol;
         private bool _disposed = false;
         #endregion
 
         protected ExternalProgramBase(
             ProgramConfig config,
-            ICommunicationProtocol protocol,
-            ILogger logger = null)
+            ICommunicationProtocol protocol)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _protocol = protocol ?? throw new ArgumentNullException(nameof(protocol));
-            _logger = logger ?? new UnityLogger();
         }
 
         #region IProcessManager Implementation
@@ -109,7 +105,7 @@ namespace FAMOZ.ExternalProgram.Core
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError($"Error during process cleanup: {ex.Message}");
+                                UnityEngine.Debug.LogError($"Error during process cleanup: {ex.Message}");
                             }
                         }
                         _process.Dispose();

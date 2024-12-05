@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using FAMOZ.ExternalProgram.Core.Communication;
+using Hian.ExternalProgram.Core.Communication;
 
-namespace FAMOZ.ExternalProgram.Core
+namespace Hian.ExternalProgram.Core
 {
     /// <summary>
     /// 외부 프로그램과의 통신을 위한 인터페이스입니다.

@@ -3,9 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FAMOZ.ExternalProgram.Core;
-using FAMOZ.ExternalProgram.Tests.Editor.Core;
-using FAMOZ.ExternalProgram.Tests.Editor.Mocks;
+using Hian.ExternalProgram.Core;
+using Hian.ExternalProgram.Tests.Editor.Core;
+using Hian.ExternalProgram.Tests.Editor.Mocks;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -16,20 +16,18 @@ namespace Mocks
     public class MockExternalProgramTests
     {
         private MockExternalProgram _program;
-        private MockLogger _logger;
         private MockCommunicationProtocol _protocol;
 
         [SetUp]
         public void Setup()
         {
-            _logger = new MockLogger();
             _protocol = new MockCommunicationProtocol();
             var config = new ProgramConfig(
                 processName: "TestProcess",
                 executablePath: "test.exe",
                 arguments: "-test"
             );
-            _program = new MockExternalProgram(config, _protocol, _logger);
+            _program = new MockExternalProgram(config, _protocol);
         }
 
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]

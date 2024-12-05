@@ -1,6 +1,6 @@
 using System;
 
-namespace FAMOZ.ExternalProgram.Core
+namespace Hian.ExternalProgram.Core
 {
     public class ProgramError
     {

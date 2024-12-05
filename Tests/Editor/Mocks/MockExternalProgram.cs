@@ -1,8 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FAMOZ.ExternalProgram.Core;
-using FAMOZ.ExternalProgram.Core.Communication;
+using Hian.ExternalProgram.Core;
+using Hian.ExternalProgram.Core.Communication;
+using UnityEngine;
 
 namespace Mocks
 {
@@ -18,9 +19,8 @@ namespace Mocks
 
         public MockExternalProgram(
             ProgramConfig config,
-            ICommunicationProtocol protocol,
-            ILogger logger = null)
-            : base(config, protocol, logger)
+            ICommunicationProtocol protocol)
+            : base(config, protocol)
         {
             _isConnected = false;
             _isRunning = false;
@@ -36,13 +36,13 @@ namespace Mocks
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    _logger?.LogWarning("Start operation was cancelled");
+                    Debug.LogWarning("Start operation was cancelled");
                     return false;
                 }
 
                 if (_isRunning)
                 {
-                    _logger?.LogWarning("Process is already running");
+                    Debug.LogWarning("Process is already running");
                     return false;
                 }
 
@@ -52,7 +52,7 @@ namespace Mocks
                 }
                 catch (OperationCanceledException)
                 {
-                    _logger?.LogWarning("Start operation was cancelled");
+                    Debug.LogWarning("Start operation was cancelled");
                     return false;
                 }
 
@@ -64,7 +64,7 @@ namespace Mocks
             }
             catch (OperationCanceledException)
             {
-                _logger?.LogWarning("Start operation was cancelled");
+                Debug.LogWarning("Start operation was cancelled");
                 return false;
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace Mocks
             {
                 if (!_isRunning)
                 {
-                    _logger?.LogWarning("Process is not running");
+                    Debug.LogWarning("Process is not running");
                     return false;
                 }
 
@@ -108,7 +108,7 @@ namespace Mocks
 
             if (_isRunning)
             {
-                _logger?.LogWarning("Process is already running");
+                Debug.LogWarning("Process is already running");
                 return false;
             }
 
@@ -123,7 +123,7 @@ namespace Mocks
         {
             if (!_isRunning)
             {
-                _logger?.LogWarning("Process is not running");
+                Debug.LogWarning("Process is not running");
                 return false;
             }
 
@@ -149,7 +149,7 @@ namespace Mocks
 
             if (_isConnected)
             {
-                _logger?.LogWarning("Already connected");
+                Debug.LogWarning("Already connected");
                 return false;
             }
 
@@ -182,7 +182,7 @@ namespace Mocks
 
             if (_isConnected)
             {
-                _logger?.LogWarning("Already connected");
+                Debug.LogWarning("Already connected");
                 return false;
             }
 

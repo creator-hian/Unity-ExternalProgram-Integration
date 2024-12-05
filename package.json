@@ -1,6 +1,6 @@
 {
   "name": "com.creator-hian.unity.external-program-integration",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "displayName": "Hian Unity External Program Integration",
   "unity": "2022.3",
   "keywords": [
@@ -12,5 +12,11 @@
     "url": "https://github.com/creator-hian"
   },
   "description": "Unity 외부 프로그램 통합을 위한 패키지입니다.",
-  "dependencies": {}
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@creator-hian"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creator-hian/Unity-ExternalProgram-Integration.git"
+  }
 }

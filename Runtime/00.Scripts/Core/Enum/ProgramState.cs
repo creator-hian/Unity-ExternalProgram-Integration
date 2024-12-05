@@ -1,4 +1,4 @@
-namespace FAMOZ.ExternalProgram.Core
+namespace Hian.ExternalProgram.Core
 {
     public enum ProgramState
     {

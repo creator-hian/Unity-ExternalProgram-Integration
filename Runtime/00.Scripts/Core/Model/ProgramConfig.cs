@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using FAMOZ.ExternalProgram.Core.Serialization;
+using Hian.ExternalProgram.Core.Serialization;
 
-namespace FAMOZ.ExternalProgram.Core
+namespace Hian.ExternalProgram.Core
 {
     /// <summary>
     /// 외부 프로그램 실행 및 통신에 필요한 설정을 정의하는 클래스입니다.
