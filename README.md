@@ -10,12 +10,60 @@ Unity에서 외부 프로그램을 실행하고 통신하기 위한 통합 패�
 - 유연한 설정 시스템
 - 포괄적인 테스트 커버리지
 
-## 설치
+## 설치 방법
 
-1. Unity 패키지 매니저를 통한 설치:
-   - Window > Package Manager
-   - '+' 버튼 > Add package from git URL
-   - URL 입력: `https://github.com/your-repo/Unity-ExternalProgram-Integration.git`
+### UPM을 통한 설치 (Git URL 사용)
+
+#### 선행 조건
+
+- Git 클라이언트(최소 버전 2.14.0)가 설치되어 있어야 합니다.
+- Windows 사용자의 경우 `PATH` 시스템 환경 변수에 Git 실행 파일 경로가 추가되어 있어야 합니다.
+
+#### 설치 방법 1: Package Manager UI 사용
+
+1. Unity 에디터에서 Window > Package Manager를 엽니다.
+2. 좌측 상단의 + 버튼을 클릭하고 "Add package from git URL"을 선택합니다.
+
+   ![Package Manager Add Git URL](Document/upm-ui-giturl.png)
+3. 다음 URL을 입력합니다:
+
+```text
+https://github.com/creator-hian/Unity-ExternalProgram-Integration.git
+```
+
+4. 'Add' 버튼을 클릭합니다.
+
+   ![Package Manager Add Button](Document/upm-ui-giturl-add.png)
+
+#### 설치 방법 2: manifest.json 직접 수정
+
+1. Unity 프로젝트의 `Packages/manifest.json` 파일을 열어 다음과 같이 dependencies 블록에 패키지를 추가하세요:
+
+```json
+{
+  "dependencies": {
+    "com.creator-hian.unity.external-program-integration": "https://github.com/creator-hian/Unity-ExternalProgram-Integration.git",
+    ...
+  }
+}
+```
+
+#### 특정 버전 설치
+
+특정 버전을 설치하려면 URL 끝에 #{version} 을 추가하세요:
+
+```json
+{
+  "dependencies": {
+    "com.creator-hian.unity.external-program-integration": "https://github.com/creator-hian/Unity-ExternalProgram-Integration.git#0.1.0",
+    ...
+  }
+}
+```
+
+#### 참조 문서
+
+- [Unity 공식 매뉴얼 - Git URL을 통한 패키지 설치](https://docs.unity3d.com/kr/2023.2/Manual/upm-ui-giturl.html)
 
 ## 설치 요구사항
 
