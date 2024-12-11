@@ -2,6 +2,11 @@
 
 Unity에서 외부 프로그램을 실행하고 통신하기 위한 통합 패키지입니다.
 
+## 요구사항
+
+- Unity 2021.3 이상
+- .NET Standard 2.1
+
 ## 특징
 
 - 외부 프로그램 생명주기 관리
@@ -73,6 +78,7 @@ https://github.com/creator-hian/Unity-ExternalProgram-Integration.git
 ## 사용 방법
 
 ### 기본 설정
+
 ```csharp
 var config = new ProgramConfig(
     processName: "MyProgram",
@@ -82,6 +88,7 @@ var config = new ProgramConfig(
 ```
 
 ### 프로그램 실행
+
 ```csharp
 using FAMOZ.ExternalProgram.Core;
 
@@ -91,12 +98,14 @@ await program.ConnectAsync();
 ```
 
 ### 명령 전송
+
 ```csharp
 await program.SendCommandAsync("command");
 var response = await program.WaitForResponseAsync("expected");
 ```
 
 ### 에러 처리
+
 ```csharp
 program.OnError += error =>
 {
@@ -115,22 +124,23 @@ program.OnError += error =>
 ## 테스트
 
 패키지는 포괄적인 테스트 스위트를 포함하고 있습니다:
+
 - 단위 테스트
 - 통합 테스트
 - Mock 객체를 통한 시뮬레이션
 
 테스트 실행:
+
 1. Unity Test Runner 열기 (Window > General > Test Runner)
 2. 'Run All' 클릭
 
 ## 라이선스
 
-
 ## 기여
 
-버그 리포트, 기능 요청, 풀 리퀘스트를 환영합니다. 
+버그 리포트, 기능 요청, 풀 리퀘스트를 환영합니다.
 자세한 내용은 [TODO](TODO.md) 파일을 참조하세요.
 
 ## 작성자
 
-- Creator-HIAN (https://github.com/Creator-HIAN)
+- Creator-HIAN (<https://github.com/Creator-HIAN>)
