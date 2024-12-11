@@ -1,7 +1,5 @@
 using NUnit.Framework;
-using System;
 using System.Threading.Tasks;
-using Hian.ExternalProgram.Core.Communication;
 using Hian.ExternalProgram.Tests.Editor.Mocks;
 
 namespace Communication
