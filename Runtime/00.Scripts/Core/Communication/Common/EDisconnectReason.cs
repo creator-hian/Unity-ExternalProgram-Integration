@@ -19,5 +19,11 @@ namespace Hian.ExternalProgram.Core.Communication
 
         /// <summary>원격 종단이 종료한 경우</summary>
         PeerGone,
+
+        /// <summary>최대 재시도 횟수 초과</summary>
+        MaxRetriesExceeded,
+
+        /// <summary>전송 오류</summary>
+        TransmissionError,
     }
 }

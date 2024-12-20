@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using Hian.ExternalProgram.Core.Communication;
 
@@ -13,6 +14,12 @@ namespace Hian.ExternalProgram.Tests.Editor.Mocks
 
         public event Action<byte[]> OnDataReceived;
         public event Action<Exception> OnError;
+        public event Action OnConnected;
+        public event Action OnDisconnected;
+        public event Action<EDisconnectReason> OnConnectionLost;
+        public event Action<ConnectionState> OnStateChanged;
+        public event Action<int> OnConnectionAttempt;
+        public event Action<TimeSpan> OnReconnecting;
 
         public bool Connect()
         {
@@ -50,7 +57,7 @@ namespace Hian.ExternalProgram.Tests.Editor.Mocks
         {
             if (_simulatedError != null)
             {
-                var error = _simulatedError;
+                Exception error = _simulatedError;
                 _simulatedError = null;
                 throw error;
             }
@@ -63,7 +70,7 @@ namespace Hian.ExternalProgram.Tests.Editor.Mocks
         {
             if (_simulatedError != null)
             {
-                var error = _simulatedError;
+                Exception error = _simulatedError;
                 _simulatedError = null;
                 OnError?.Invoke(error);
                 throw error;
@@ -85,4 +92,4 @@ namespace Hian.ExternalProgram.Tests.Editor.Mocks
             OnError?.Invoke(error);
         }
     }
-} 
+}
