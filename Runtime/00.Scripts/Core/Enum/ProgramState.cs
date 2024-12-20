@@ -7,6 +7,6 @@ namespace Hian.ExternalProgram.Core
         Running,
         Stopping,
         Stopped,
-        Error
+        Error,
     }
-} 
+}

@@ -18,4 +18,4 @@ namespace Hian.ExternalProgram.Core.Communication
         /// <returns>생성된 통신 프로토콜 인스턴스</returns>
         ICommunicationProtocol CreateProtocol(ProgramConfig config);
     }
-} 
+}

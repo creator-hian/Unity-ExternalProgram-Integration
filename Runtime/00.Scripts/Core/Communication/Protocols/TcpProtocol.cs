@@ -13,12 +13,12 @@ namespace Hian.ExternalProgram.Core.Communication
         private NetworkStream _stream;
         private readonly CancellationTokenSource _cts;
         private Task _receiveTask;
-        
+
         public bool IsConnected => _client?.Connected ?? false;
-        
+
         public event Action<byte[]> OnDataReceived;
         public event Action<Exception> OnError;
-        
+
         public TcpProtocol(string host, int port)
         {
             _client = new TcpClient();
@@ -28,28 +28,14 @@ namespace Hian.ExternalProgram.Core.Communication
 
         event Action<byte[]> ICommunicationProtocol.OnDataReceived
         {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
         }
 
         event Action<Exception> ICommunicationProtocol.OnError
         {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
         }
 
         public bool Connect()
@@ -67,7 +53,7 @@ namespace Hian.ExternalProgram.Core.Communication
                 return false;
             }
         }
-        
+
         public async Task<bool> ConnectAsync()
         {
             try
@@ -83,35 +69,38 @@ namespace Hian.ExternalProgram.Core.Communication
                 return false;
             }
         }
-        
+
         private void StartReceiving()
         {
-            _receiveTask = Task.Run(async () =>
-            {
-                byte[] buffer = new byte[4096];
-                
-                while (!_cts.Token.IsCancellationRequested)
+            _receiveTask = Task.Run(
+                async () =>
                 {
-                    try
+                    byte[] buffer = new byte[4096];
+
+                    while (!_cts.Token.IsCancellationRequested)
                     {
-                        int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
-                        if (bytesRead > 0)
+                        try
                         {
-                            byte[] received = new byte[bytesRead];
-                            Array.Copy(buffer, received, bytesRead);
-                            OnDataReceived?.Invoke(received);
+                            int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
+                            if (bytesRead > 0)
+                            {
+                                byte[] received = new byte[bytesRead];
+                                Array.Copy(buffer, received, bytesRead);
+                                OnDataReceived?.Invoke(received);
+                            }
+                        }
+                        catch (Exception ex) when (!_cts.Token.IsCancellationRequested)
+                        {
+                            OnError?.Invoke(ex);
                         }
                     }
-                    catch (Exception ex) when (!_cts.Token.IsCancellationRequested)
-                    {
-                        OnError?.Invoke(ex);
-                    }
-                }
-            }, _cts.Token);
+                },
+                _cts.Token
+            );
         }
-        
+
         // 나머지 메서드 구현...
-        
+
         public void Dispose()
         {
             _cts.Cancel();
@@ -156,4 +145,3 @@ namespace Hian.ExternalProgram.Core.Communication
         }
     }
 }
-

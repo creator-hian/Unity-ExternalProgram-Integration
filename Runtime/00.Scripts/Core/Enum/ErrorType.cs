@@ -8,6 +8,6 @@ namespace Hian.ExternalProgram.Core
         Communication,
         Timeout,
         InvalidOperation,
-        Unknown
+        Unknown,
     }
-} 
+}
