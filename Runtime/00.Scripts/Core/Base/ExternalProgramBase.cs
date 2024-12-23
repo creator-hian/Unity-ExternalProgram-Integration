@@ -135,7 +135,7 @@ namespace Hian.ExternalProgram.Core
         {
             if (IsRunning)
             {
-                await StopAsync();
+                _ = await StopAsync();
             }
             return await StartAsync(cancellationToken);
         }
