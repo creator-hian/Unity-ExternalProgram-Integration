@@ -17,4 +17,4 @@ namespace Hian.ExternalProgram.Core
             StackTrace = exception?.StackTrace;
         }
     }
-} 
+}

@@ -13,14 +13,14 @@ namespace Hian.ExternalProgram.Core
         string ExecutablePath { get; }
         string Arguments { get; }
         bool IsRunning { get; }
-        
+
         Task<bool> StartAsync(CancellationToken cancellationToken = default);
         Task<bool> StopAsync();
         Task<bool> RestartAsync(CancellationToken cancellationToken = default);
-        
+
         bool Start();
         bool Stop();
-        
+
         event Action<string> OnProcessOutput;
         event Action<string> OnProcessError;
         event Action<int> OnProcessExit;

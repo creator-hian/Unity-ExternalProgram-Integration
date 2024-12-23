@@ -12,8 +12,8 @@ namespace Hian.ExternalProgram.Core.Communication
         /// <summary>
         /// 등록된 프로토콜 제공자 목록
         /// </summary>
-        private readonly Dictionary<string, ICommunicationProtocolProvider> _providers 
-            = new Dictionary<string, ICommunicationProtocolProvider>();
+        private readonly Dictionary<string, ICommunicationProtocolProvider> _providers =
+            new Dictionary<string, ICommunicationProtocolProvider>();
 
         /// <summary>
         /// 새로운 프로토콜 제공자를 등록합니다.
@@ -23,7 +23,9 @@ namespace Hian.ExternalProgram.Core.Communication
         public void RegisterProvider(ICommunicationProtocolProvider provider)
         {
             if (provider == null)
+            {
                 throw new ArgumentNullException(nameof(provider));
+            }
 
             _providers[provider.ProtocolType] = provider;
         }
@@ -37,14 +39,23 @@ namespace Hian.ExternalProgram.Core.Communication
         public ICommunicationProtocol Create(ProgramConfig config)
         {
             if (string.IsNullOrEmpty(config.ProtocolType))
+            {
                 return null;
+            }
 
-            if (_providers.TryGetValue(config.ProtocolType, out var provider))
+            if (
+                _providers.TryGetValue(
+                    config.ProtocolType,
+                    out ICommunicationProtocolProvider provider
+                )
+            )
             {
                 return provider.CreateProtocol(config);
             }
 
-            throw new InvalidOperationException($"No provider registered for protocol type: {config.ProtocolType}");
+            throw new InvalidOperationException(
+                $"No provider registered for protocol type: {config.ProtocolType}"
+            );
         }
     }
-} 
+}

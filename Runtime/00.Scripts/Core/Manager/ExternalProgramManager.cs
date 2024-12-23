@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Hian.ExternalProgram.Core.Manager
@@ -12,7 +12,7 @@ namespace Hian.ExternalProgram.Core.Manager
     public class ExternalProgramManager : IDisposable
     {
         private static readonly Lazy<ExternalProgramManager> _instance =
-            new Lazy<ExternalProgramManager>(() => new ExternalProgramManager());
+            new Lazy<ExternalProgramManager>(static () => new ExternalProgramManager());
 
         /// <summary>
         /// 싱글톤 인스턴스를 가져옵니다.
@@ -33,7 +33,9 @@ namespace Hian.ExternalProgram.Core.Manager
         public bool RegisterProgram(IExternalProgram program)
         {
             if (program == null)
+            {
                 throw new ArgumentNullException(nameof(program));
+            }
 
             bool added = _programs.TryAdd(program.ProcessName, program);
             if (added)
@@ -48,10 +50,12 @@ namespace Hian.ExternalProgram.Core.Manager
         /// </summary>
         public async Task<bool> UnregisterProgramAsync(string programName)
         {
-            if (_programs.TryGetValue(programName, out var program))
+            if (_programs.TryGetValue(programName, out IExternalProgram program))
             {
                 if (program.IsRunning)
-                    await program.StopAsync();
+                {
+                    _ = await program.StopAsync();
+                }
 
                 bool removed = _programs.TryRemove(programName, out _);
                 if (removed)
@@ -69,7 +73,7 @@ namespace Hian.ExternalProgram.Core.Manager
         /// </summary>
         public IExternalProgram GetProgram(string programName)
         {
-            _programs.TryGetValue(programName, out var program);
+            _ = _programs.TryGetValue(programName, out IExternalProgram program);
             return program;
         }
 
@@ -78,10 +82,12 @@ namespace Hian.ExternalProgram.Core.Manager
         /// </summary>
         public async Task CleanupAsync()
         {
-            var stopTasks = _programs.Values.Select(p => p.StopAsync());
-            await Task.WhenAll(stopTasks);
+            System.Collections.Generic.IEnumerable<Task<bool>> stopTasks = _programs.Values.Select(
+                static p => p.StopAsync()
+            );
+            _ = await Task.WhenAll(stopTasks);
 
-            foreach (var program in _programs.Values)
+            foreach (IExternalProgram program in _programs.Values)
             {
                 program.Dispose();
             }

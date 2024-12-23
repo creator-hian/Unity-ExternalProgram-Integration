@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Hian.ExternalProgram.Core.Serialization;
 
 namespace Hian.ExternalProgram.Core
 {
@@ -9,26 +8,31 @@ namespace Hian.ExternalProgram.Core
     /// </summary>
     public class ProgramConfig
     {
-        private static IJsonSerializer _jsonSerializer = new UnityJsonSerializer();
-
         [SerializeField]
         private string processName;
+
         [SerializeField]
         private string executablePath;
+
         [SerializeField]
         private string arguments;
+
         [SerializeField]
         private string protocolType;
+
         [SerializeField]
         private int portNumber;
+
         [SerializeField]
         private int startTimeoutMs;
+
         [SerializeField]
         private int stopTimeoutMs;
+
         [SerializeField]
         private int maxRetryAttempts;
 
-        // 프로퍼티는 직렬화되지 않으므로 백킹 필드를 통해 접근
+        // 프로퍼티는 필드를 반환하도록 수정
         public string ProcessName => processName;
         public string ExecutablePath => executablePath;
         public string Arguments => arguments;
@@ -38,6 +42,9 @@ namespace Hian.ExternalProgram.Core
         public int StopTimeoutMs => stopTimeoutMs;
         public int MaxRetryAttempts => maxRetryAttempts;
 
+        // 기본 생성자 추가 (JsonUtility용)
+        public ProgramConfig() { }
+
         public ProgramConfig(
             string processName,
             string executablePath,
@@ -46,14 +53,26 @@ namespace Hian.ExternalProgram.Core
             string arguments = "",
             int startTimeoutMs = ExternalProgramConstants.Timeouts.DEFAULT_START_TIMEOUT_MS,
             int stopTimeoutMs = ExternalProgramConstants.Timeouts.DEFAULT_STOP_TIMEOUT_MS,
-            int maxRetryAttempts = ExternalProgramConstants.RetryPolicy.DEFAULT_MAX_RETRY_ATTEMPTS)
+            int maxRetryAttempts = ExternalProgramConstants.RetryPolicy.DEFAULT_MAX_RETRY_ATTEMPTS
+        )
         {
             if (string.IsNullOrEmpty(processName))
+            {
                 throw new ArgumentException("Process name cannot be empty", nameof(processName));
+            }
+
             if (string.IsNullOrEmpty(executablePath))
-                throw new ArgumentException("Executable path cannot be empty", nameof(executablePath));
+            {
+                throw new ArgumentException(
+                    "Executable path cannot be empty",
+                    nameof(executablePath)
+                );
+            }
+
             if (string.IsNullOrEmpty(protocolType))
+            {
                 throw new ArgumentException("Protocol type cannot be empty", nameof(protocolType));
+            }
 
             this.processName = processName;
             this.executablePath = executablePath;
@@ -83,30 +102,14 @@ namespace Hian.ExternalProgram.Core
             );
         }
 
-        // 직렬화 방식 변경을 위한 메서드
-        public static void SetJsonSerializer(IJsonSerializer serializer)
-        {
-            _jsonSerializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-        }
-
         public string ToJson()
         {
-            return _jsonSerializer.Serialize(this);
+            return JsonUtility.ToJson(this, true);
         }
 
         public static ProgramConfig FromJson(string json)
         {
-            if (string.IsNullOrEmpty(json))
-                throw new ArgumentException("JSON string cannot be empty", nameof(json));
-
-            try
-            {
-                return _jsonSerializer.Deserialize<ProgramConfig>(json);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException("Invalid JSON format", nameof(json), ex);
-            }
+            return JsonUtility.FromJson<ProgramConfig>(json);
         }
     }
 }

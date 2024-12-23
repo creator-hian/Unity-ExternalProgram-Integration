@@ -9,4 +9,4 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols
             return new TcpProtocol(ExternalProgramConstants.LOCAL_ADDRESS, config.PortNumber);
         }
     }
-} 
+}

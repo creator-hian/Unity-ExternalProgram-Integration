@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Hian.ExternalProgram.Core.Communication;
-using System.Threading;
 
 namespace Hian.ExternalProgram.Core
 {
@@ -19,9 +19,7 @@ namespace Hian.ExternalProgram.Core
         private bool _disposed = false;
         #endregion
 
-        protected ExternalProgramBase(
-            ProgramConfig config,
-            ICommunicationProtocol protocol)
+        protected ExternalProgramBase(ProgramConfig config, ICommunicationProtocol protocol)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _protocol = protocol ?? throw new ArgumentNullException(nameof(protocol));
@@ -56,7 +54,10 @@ namespace Hian.ExternalProgram.Core
         public event Action<ProgramError> OnError;
 
         public abstract Task SendCommandAsync(string command);
-        public abstract Task<string> WaitForResponseAsync(string expectedPattern, TimeSpan? timeout = null);
+        public abstract Task<string> WaitForResponseAsync(
+            string expectedPattern,
+            TimeSpan? timeout = null
+        );
         #endregion
 
         // 이벤트 발생을 위한 protected 메서드들
@@ -105,7 +106,9 @@ namespace Hian.ExternalProgram.Core
                             }
                             catch (Exception ex)
                             {
-                                UnityEngine.Debug.LogError($"Error during process cleanup: {ex.Message}");
+                                UnityEngine.Debug.LogError(
+                                    $"Error during process cleanup: {ex.Message}"
+                                );
                             }
                         }
                         _process.Dispose();
@@ -137,4 +140,4 @@ namespace Hian.ExternalProgram.Core
             return await StartAsync(cancellationToken);
         }
     }
-} 
+}
