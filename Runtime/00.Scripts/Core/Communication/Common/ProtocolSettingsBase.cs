@@ -24,26 +24,51 @@ namespace Hian.ExternalProgram.Core.Communication.Settings
         public virtual bool Validate()
         {
             if (BufferSize <= 0)
+            {
                 return false;
+            }
+
             if (MaxMessageSize <= 0)
+            {
                 return false;
+            }
+
             if (ConnectionTimeoutMs <= 0)
+            {
                 return false;
+            }
+
             if (SendTimeoutMs <= 0)
+            {
                 return false;
+            }
+
             if (ReceiveTimeoutMs <= 0)
+            {
                 return false;
+            }
+
             if (MaxReconnectAttempts < 0)
+            {
                 return false;
+            }
+
             if (ReconnectDelayMs < 0)
+            {
                 return false;
+            }
+
             if (MaxReconnectDelayMs < 0)
+            {
                 return false;
+            }
+
             if (MaxConcurrentOperations <= 0)
+            {
                 return false;
-            if (MaxMetricsCount < 0)
-                return false;
-            return true;
+            }
+
+            return MaxMetricsCount >= 0;
         }
 
         public abstract object Clone();

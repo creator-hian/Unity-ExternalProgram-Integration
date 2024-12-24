@@ -71,9 +71,11 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
         private void ProcessBatch(object state)
         {
             if (!_settings.EnableBatching || !IsConnected)
+            {
                 return;
+            }
 
-            var batchData = new List<byte[]>();
+            List<byte[]> batchData = new List<byte[]>();
             while (_batchQueue.TryDequeue(out byte[] data) && batchData.Count < _settings.BatchSize)
             {
                 batchData.Add(data);
@@ -82,7 +84,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
             if (batchData.Count > 0)
             {
                 // 배치 데이터를 하나의 메시지로 결합
-                int totalLength = batchData.Sum(d => d.Length);
+                int totalLength = batchData.Sum(static d => d.Length);
                 byte[] combinedData = new byte[totalLength];
                 int offset = 0;
                 foreach (byte[] data in batchData)
@@ -104,7 +106,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
                     {
                         try
                         {
-                            await Task.Run(() => _dataAvailable.WaitOne(100), _cts.Token);
+                            _ = await Task.Run(() => _dataAvailable.WaitOne(100), _cts.Token);
 
                             if (
                                 _channels.TryGetValue(_channelId, out ConcurrentQueue<byte[]> queue)
@@ -120,7 +122,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
                                             > _settings.MessageTtl
                                         )
                                         {
-                                            queue.TryDequeue(out _);
+                                            _ = queue.TryDequeue(out _);
                                         }
                                         else
                                         {
@@ -168,16 +170,18 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
         private void ProcessPriorityMessages()
         {
             if (!_settings.EnablePriority || _priorityQueue == null)
+            {
                 return;
+            }
 
-            var messages = new List<PriorityMessage>();
+            List<PriorityMessage> messages = new List<PriorityMessage>();
             while (_priorityQueue.TryDequeue(out PriorityMessage msg))
             {
                 messages.Add(msg);
             }
 
             // 우선순위별로 정렬
-            foreach (var msg in messages.OrderByDescending(m => m.Priority))
+            foreach (PriorityMessage msg in messages.OrderByDescending(static m => m.Priority))
             {
                 OnDataReceived?.Invoke(msg.Data);
             }
@@ -186,12 +190,16 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
         public void Dispose()
         {
             if (_isDisposed)
+            {
                 return;
+            }
 
             lock (_lock)
             {
                 if (_isDisposed)
+                {
                     return;
+                }
 
                 _isDisposed = true;
 
@@ -202,10 +210,10 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
 
                     if (_receiveTask != null && !_receiveTask.IsCompleted)
                     {
-                        Task.WaitAny(_receiveTask, Task.Delay(1000));
+                        _ = Task.WaitAny(_receiveTask, Task.Delay(1000));
                     }
 
-                    _channels.TryRemove(_channelId, out _);
+                    _ = _channels.TryRemove(_channelId, out _);
                     _cts.Dispose();
                     _dataAvailable.Dispose();
 
@@ -221,8 +229,8 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
 
         event Action<ConnectionState> ICommunicationProtocol.OnStateChanged
         {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
         }
 
         public bool Connect()

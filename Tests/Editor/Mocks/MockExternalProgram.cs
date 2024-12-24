@@ -17,9 +17,7 @@ namespace Mocks
         private bool _isRunning;
         private bool _disposed;
 
-        public MockExternalProgram(
-            ProgramConfig config,
-            ICommunicationProtocol protocol)
+        public MockExternalProgram(ProgramConfig config, ICommunicationProtocol protocol)
             : base(config, protocol)
         {
             _isConnected = false;
@@ -69,7 +67,7 @@ namespace Mocks
             }
             catch (Exception ex)
             {
-                var error = new ProgramError("Start failed", ErrorType.ProcessStart, ex);
+                ProgramError error = new ProgramError("Start failed", ErrorType.ProcessStart, ex);
                 RaiseError(error);
                 return false;
             }
@@ -96,7 +94,7 @@ namespace Mocks
             }
             catch (Exception ex)
             {
-                var error = new ProgramError("Stop failed", ErrorType.ProcessStop, ex);
+                ProgramError error = new ProgramError("Stop failed", ErrorType.ProcessStop, ex);
                 RaiseError(error);
                 return false;
             }
@@ -142,7 +140,10 @@ namespace Mocks
         {
             if (!_isRunning)
             {
-                var error = new ProgramError("Cannot connect: Process not running", ErrorType.InvalidOperation);
+                ProgramError error = new ProgramError(
+                    "Cannot connect: Process not running",
+                    ErrorType.InvalidOperation
+                );
                 RaiseError(error);
                 return false;
             }
@@ -175,7 +176,10 @@ namespace Mocks
 
             if (!_isRunning)
             {
-                var error = new ProgramError("Cannot connect: Process not running", ErrorType.InvalidOperation);
+                ProgramError error = new ProgramError(
+                    "Cannot connect: Process not running",
+                    ErrorType.InvalidOperation
+                );
                 RaiseError(error);
                 return false;
             }
@@ -206,21 +210,28 @@ namespace Mocks
             {
                 if (!_isConnected)
                 {
-                    var error = new ProgramError("Cannot send command: Not connected", ErrorType.InvalidOperation);
+                    ProgramError error = new ProgramError(
+                        "Cannot send command: Not connected",
+                        ErrorType.InvalidOperation
+                    );
                     RaiseError(error);
                     throw new InvalidOperationException(error.Message);
                 }
 
                 await Task.Delay(50);
-                
+
                 try
                 {
-                    await _protocol.SendAsync(System.Text.Encoding.UTF8.GetBytes(command));
+                    _ = await _protocol.SendAsync(System.Text.Encoding.UTF8.GetBytes(command));
                     RaiseProcessOutput($"Command sent: {command}");
                 }
                 catch (Exception ex)
                 {
-                    var error = new ProgramError("Communication failed", ErrorType.Communication, ex);
+                    ProgramError error = new ProgramError(
+                        "Communication failed",
+                        ErrorType.Communication,
+                        ex
+                    );
                     RaiseError(error);
                     throw;
                 }
@@ -231,26 +242,37 @@ namespace Mocks
             }
             catch (Exception ex)
             {
-                var error = new ProgramError("Send command failed", ErrorType.Communication, ex);
+                ProgramError error = new ProgramError(
+                    "Send command failed",
+                    ErrorType.Communication,
+                    ex
+                );
                 RaiseError(error);
                 throw;
             }
         }
 
-        public override async Task<string> WaitForResponseAsync(string expectedPattern, TimeSpan? timeout = null)
+        public override async Task<string> WaitForResponseAsync(
+            string expectedPattern,
+            TimeSpan? timeout = null
+        )
         {
             if (!_isConnected)
+            {
                 throw new InvalidOperationException("Not connected");
+            }
 
             if (timeout.HasValue)
             {
                 // 타임아웃이 지정된 경우 즉시 타임아웃 발생
-                throw new TimeoutException($"Response wait timed out after {timeout.Value.TotalMilliseconds}ms");
+                throw new TimeoutException(
+                    $"Response wait timed out after {timeout.Value.TotalMilliseconds}ms"
+                );
             }
 
             // 타임아웃이 없는 경우 정상 응답
             await Task.Delay(50);
-            var response = $"MockResponse: {expectedPattern}";
+            string response = $"MockResponse: {expectedPattern}";
             RaiseProcessOutput($"Response received: {response}");
             return response;
         }
@@ -279,7 +301,10 @@ namespace Mocks
                 if (disposing)
                 {
                     if (_isRunning)
-                        Stop();
+                    {
+                        _ = Stop();
+                    }
+
                     _isConnected = false;
                     _isRunning = false;
                 }
@@ -296,4 +321,4 @@ namespace Mocks
             }
         }
     }
-} 
+}

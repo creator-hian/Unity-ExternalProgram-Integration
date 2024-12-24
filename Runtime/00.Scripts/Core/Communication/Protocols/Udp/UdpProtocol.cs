@@ -174,7 +174,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Udp
 
         private void StartRetransmissionTimer()
         {
-            Task.Run(
+            _ = Task.Run(
                 async () =>
                 {
                     while (!_cts.Token.IsCancellationRequested && _isRunning)
@@ -191,7 +191,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Udp
                             {
                                 if (packet.RetryCount >= _settings.MaxRetransmissions)
                                 {
-                                    packet.CompletionSource.TrySetResult(false);
+                                    _ = packet.CompletionSource.TrySetResult(false);
                                     continue;
                                 }
 
@@ -302,7 +302,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Udp
                 LastSentTime = DateTime.UtcNow,
             };
 
-            _pendingPackets.TryAdd(sequenceNumber, packet);
+            _ = _pendingPackets.TryAdd(sequenceNumber, packet);
 
             try
             {
@@ -323,7 +323,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Udp
             }
             finally
             {
-                _pendingPackets.TryRemove(sequenceNumber, out _);
+                _ = _pendingPackets.TryRemove(sequenceNumber, out _);
             }
         }
 

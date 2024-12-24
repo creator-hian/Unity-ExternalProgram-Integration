@@ -1,12 +1,12 @@
-using NUnit.Framework;
-using System.Threading.Tasks;
-using Hian.ExternalProgram.Core;
-using Hian.ExternalProgram.Tests.Editor.Mocks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using Hian.ExternalProgram.Core;
 using Hian.ExternalProgram.Tests.Editor.Core;
+using Hian.ExternalProgram.Tests.Editor.Mocks;
 using Mocks;
-using System;
+using NUnit.Framework;
 
 namespace ExternalProgram
 {
@@ -58,18 +58,18 @@ namespace ExternalProgram
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task Events_ShouldFollowCorrectSequence()
         {
-            var stateChanges = new List<ProgramState>();
-            var outputs = new List<string>();
+            List<ProgramState> stateChanges = new List<ProgramState>();
+            List<string> outputs = new List<string>();
 
             _program.OnStateChanged += state => stateChanges.Add(state);
             _program.OnProcessOutput += output => outputs.Add(output);
 
             // 시작
-            await _program.StartAsync();
+            _ = await _program.StartAsync();
             Assert.That(stateChanges, Is.EqualTo(new[] { ProgramState.Running }));
 
             // 연결
-            await _program.ConnectAsync();
+            _ = await _program.ConnectAsync();
             Assert.That(outputs, Has.Some.Contains("Connected to process"));
 
             // 명령 전송
@@ -81,43 +81,49 @@ namespace ExternalProgram
             Assert.That(outputs, Has.Some.Contains("Disconnected from process"));
 
             // 종료
-            await _program.StopAsync();
-            Assert.That(stateChanges, Is.EqualTo(new[] { 
-                ProgramState.Running, 
-                ProgramState.Stopped 
-            }));
+            _ = await _program.StopAsync();
+            Assert.That(
+                stateChanges,
+                Is.EqualTo(new[] { ProgramState.Running, ProgramState.Stopped })
+            );
 
             // 전체 출력 순서 확인
             Assert.That(outputs, Has.Count.GreaterThan(0));
-            Assert.That(outputs.IndexOf("Process started") < outputs.IndexOf("Connected to process"));
-            Assert.That(outputs.IndexOf("Connected to process") < outputs.IndexOf("Command sent: test"));
-            Assert.That(outputs.IndexOf("Command sent: test") < outputs.IndexOf("Disconnected from process"));
+            Assert.That(
+                outputs.IndexOf("Process started") < outputs.IndexOf("Connected to process")
+            );
+            Assert.That(
+                outputs.IndexOf("Connected to process") < outputs.IndexOf("Command sent: test")
+            );
+            Assert.That(
+                outputs.IndexOf("Command sent: test") < outputs.IndexOf("Disconnected from process")
+            );
         }
 
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task InvalidStateTransitions_ShouldFail()
         {
             // 시작하지 않은 상태에서 연결 시도
-            var connectResult = await _program.ConnectAsync();
+            bool connectResult = await _program.ConnectAsync();
             Assert.That(connectResult, Is.False);
             Assert.That(_program.IsConnected, Is.False);
 
             // 시작
-            await _program.StartAsync();
+            _ = await _program.StartAsync();
 
             // 이미 실행 중일 때 다시 시작 시도
-            var startResult = await _program.StartAsync();
+            bool startResult = await _program.StartAsync();
             Assert.That(startResult, Is.False);
 
             // 연결
-            await _program.ConnectAsync();
+            _ = await _program.ConnectAsync();
 
             // 이미 연결된 상태에서 다시 연결 시도
             connectResult = await _program.ConnectAsync();
             Assert.That(connectResult, Is.False);
 
             // 연결 해제 없이 종료
-            var stopResult = await _program.StopAsync();
+            bool stopResult = await _program.StopAsync();
             Assert.That(stopResult, Is.True);
             Assert.That(_program.IsConnected, Is.False, "연결이 자동으로 해제되어야 함");
         }
@@ -125,12 +131,12 @@ namespace ExternalProgram
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task Communication_WhenConnected_ShouldWork()
         {
-            await _program.StartAsync();
-            await _program.ConnectAsync();
+            _ = await _program.StartAsync();
+            _ = await _program.ConnectAsync();
 
-            var command = "test_command";
+            string command = "test_command";
             await _program.SendCommandAsync(command);
-            var response = await _program.WaitForResponseAsync(command);
+            string response = await _program.WaitForResponseAsync(command);
 
             Assert.That(response, Does.Contain(command));
         }
@@ -138,21 +144,24 @@ namespace ExternalProgram
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task StartAsync_WithCancellation_ShouldCancelOperation()
         {
-            using var cts = new CancellationTokenSource();
+            using CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
-            
-            var result = await _program.StartAsync(cts.Token);
-            
-            
-                Assert.That(result, Is.False, "Operation should return false when cancelled");
-            Assert.That(_program.IsRunning, Is.False, "Program should not be running after cancellation");
+
+            bool result = await _program.StartAsync(cts.Token);
+
+            Assert.That(result, Is.False, "Operation should return false when cancelled");
+            Assert.That(
+                _program.IsRunning,
+                Is.False,
+                "Program should not be running after cancellation"
+            );
         }
 
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task StopAsync_WhenNotRunning_ShouldReturnFalse()
         {
-            var result = await _program.StopAsync();
-            
+            bool result = await _program.StopAsync();
+
             Assert.That(result, Is.False);
         }
 
@@ -160,12 +169,12 @@ namespace ExternalProgram
         public async Task RestartAsync_ShouldResetState()
         {
             // Arrange
-            await _program.StartAsync();
-            await _program.ConnectAsync();
-            
+            _ = await _program.StartAsync();
+            _ = await _program.ConnectAsync();
+
             // Act
-            var result = await _program.RestartAsync();
-            
+            bool result = await _program.RestartAsync();
+
             // Assert
             Assert.That(result, Is.True);
             Assert.That(_program.IsRunning, Is.True);
@@ -175,13 +184,13 @@ namespace ExternalProgram
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task WaitForResponse_WithTimeout_ShouldThrow()
         {
-            await _program.StartAsync();
-            await _program.ConnectAsync();
+            _ = await _program.StartAsync();
+            _ = await _program.ConnectAsync();
 
-            var timeout = TimeSpan.FromMilliseconds(50);
-            var ex = Assert.ThrowsAsync<TimeoutException>(async () =>
+            TimeSpan timeout = TimeSpan.FromMilliseconds(50);
+            TimeoutException ex = Assert.ThrowsAsync<TimeoutException>(async () =>
             {
-                await _program.WaitForResponseAsync("test", timeout);
+                _ = await _program.WaitForResponseAsync("test", timeout);
             });
 
             Assert.That(ex.Message, Does.Contain("timed out"));
@@ -191,16 +200,16 @@ namespace ExternalProgram
         [Test, Timeout(TestConstants.Timeouts.QUICK_TEST_TIMEOUT)]
         public async Task MultipleCommands_ShouldExecuteInOrder()
         {
-            await _program.StartAsync();
-            await _program.ConnectAsync();
+            _ = await _program.StartAsync();
+            _ = await _program.ConnectAsync();
 
-            var commands = new[] { "cmd1", "cmd2", "cmd3" };
-            var responses = new List<string>();
+            string[] commands = new[] { "cmd1", "cmd2", "cmd3" };
+            List<string> responses = new List<string>();
 
-            foreach (var cmd in commands)
+            foreach (string cmd in commands)
             {
                 await _program.SendCommandAsync(cmd);
-                var response = await _program.WaitForResponseAsync(cmd);
+                string response = await _program.WaitForResponseAsync(cmd);
                 responses.Add(response);
             }
 
@@ -217,11 +226,11 @@ namespace ExternalProgram
             ProgramError caughtError = null;
             _program.OnError += error => caughtError = error;
 
-            await _program.StartAsync();
-            await _program.ConnectAsync();
+            _ = await _program.StartAsync();
+            _ = await _program.ConnectAsync();
 
             // 통신 프로토콜에 에러 발생 시뮬레이션
-            var exception = new Exception("Network error");
+            Exception exception = new Exception("Network error");
             _protocol.SimulateError(exception);
 
             try
