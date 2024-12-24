@@ -52,18 +52,31 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Udp
         public override bool Validate()
         {
             if (!base.Validate())
+            {
                 return false;
+            }
+
             if (TimeToLive <= 0)
+            {
                 return false;
+            }
+
             if (AckTimeoutMs <= 0)
+            {
                 return false;
+            }
+
             if (MaxRetransmissions <= 0)
+            {
                 return false;
+            }
+
             if (MaxPacketSize <= 0)
+            {
                 return false;
-            if (MulticastPort <= 0 || MulticastPort > 65535)
-                return false;
-            return true;
+            }
+
+            return MulticastPort is > 0 and <= 65535;
         }
     }
 }

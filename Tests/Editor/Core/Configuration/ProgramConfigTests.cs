@@ -1,6 +1,6 @@
-using NUnit.Framework;
-using Hian.ExternalProgram.Core;
 using System;
+using Hian.ExternalProgram.Core;
+using NUnit.Framework;
 
 namespace Configuration
 {
@@ -22,7 +22,7 @@ namespace Configuration
         [Test]
         public void Constructor_WithValidValues_ShouldInitializeCorrectly()
         {
-            var config = new ProgramConfig(
+            ProgramConfig config = new ProgramConfig(
                 processName: "TestProcess",
                 executablePath: "test.exe",
                 protocolType: "TCP",
@@ -40,37 +40,38 @@ namespace Configuration
         [Test]
         public void Constructor_WithEmptyProcessName_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new ProgramConfig(
-                processName: "",
-                executablePath: "test.exe"
-            ));
+            _ = Assert.Throws<ArgumentException>(
+                static () => new ProgramConfig(processName: "", executablePath: "test.exe")
+            );
         }
 
         [Test]
         public void Constructor_WithEmptyExecutablePath_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new ProgramConfig(
-                processName: "TestProcess",
-                executablePath: ""
-            ));
+            _ = Assert.Throws<ArgumentException>(
+                static () => new ProgramConfig(processName: "TestProcess", executablePath: "")
+            );
         }
 
         [Test]
         public void Constructor_WithEmptyProtocolType_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new ProgramConfig(
-                processName: "TestProcess",
-                executablePath: "test.exe",
-                protocolType: ""
-            ));
+            _ = Assert.Throws<ArgumentException>(
+                static () =>
+                    new ProgramConfig(
+                        processName: "TestProcess",
+                        executablePath: "test.exe",
+                        protocolType: ""
+                    )
+            );
         }
 
         [Test]
         public void Clone_ShouldCreateDeepCopy()
         {
             // Act
-            var clone = _config.Clone();
-            var newConfig = new ProgramConfig(
+            ProgramConfig clone = _config.Clone();
+            ProgramConfig newConfig = new ProgramConfig(
                 processName: "TestProcess",
                 executablePath: _config.ExecutablePath,
                 arguments: _config.Arguments,
@@ -95,7 +96,7 @@ namespace Configuration
             Assert.That(json, Does.Contain("\"protocolType\""));
             Assert.That(json, Does.Contain("\"portNumber\""));
             Assert.That(json, Does.Contain("\"arguments\""));
-                
+
             // 값 검증
             Assert.That(json, Does.Contain(_config.ProcessName));
             Assert.That(json, Does.Contain(_config.ExecutablePath));
@@ -109,11 +110,11 @@ namespace Configuration
             string json = _config.ToJson();
 
             // Act
-            var deserializedConfig = ProgramConfig.FromJson(json);
+            ProgramConfig deserializedConfig = ProgramConfig.FromJson(json);
 
             // Assert
             Assert.That(deserializedConfig.ProcessName, Is.EqualTo(_config.ProcessName));
-            Assert.That(deserializedConfig.ExecutablePath, Is.EqualTo(_config.ExecutablePath)); 
+            Assert.That(deserializedConfig.ExecutablePath, Is.EqualTo(_config.ExecutablePath));
             Assert.That(deserializedConfig.ProtocolType, Is.EqualTo(_config.ProtocolType));
             Assert.That(deserializedConfig.PortNumber, Is.EqualTo(_config.PortNumber));
             Assert.That(deserializedConfig.Arguments, Is.EqualTo(_config.Arguments));
@@ -125,13 +126,15 @@ namespace Configuration
         [Test]
         public void FromJson_WithInvalidJson_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => ProgramConfig.FromJson("invalid json"));
+            _ = Assert.Throws<ArgumentException>(
+                static () => ProgramConfig.FromJson("invalid json")
+            );
         }
 
         [Test]
         public void FromJson_WithEmptyJson_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => ProgramConfig.FromJson(""));
+            _ = Assert.Throws<ArgumentException>(static () => ProgramConfig.FromJson(""));
         }
     }
 }

@@ -57,12 +57,16 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
         public override bool Validate()
         {
             if (!base.Validate())
+            {
                 return false;
+            }
+
             if (BaudRate <= 0)
+            {
                 return false;
-            if (DataBits < 5 || DataBits > 8)
-                return false;
-            return true;
+            }
+
+            return DataBits is >= 5 and <= 8;
         }
     }
 }

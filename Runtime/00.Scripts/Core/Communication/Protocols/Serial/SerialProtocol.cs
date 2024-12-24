@@ -74,7 +74,9 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
                 try
                 {
                     if (IsConnected)
+                    {
                         return true;
+                    }
 
                     OnStateChanged?.Invoke(ConnectionState.Connecting);
                     _serialPort.Open();
@@ -172,7 +174,9 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
                     await Task.Delay(delay).ConfigureAwait(false);
 
                     if (_serialPort.IsOpen)
+                    {
                         _serialPort.Close();
+                    }
 
                     _serialPort.Open();
                     StartReceiving();
@@ -193,7 +197,9 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
         {
             ThrowIfDisposed();
             if (!IsConnected)
+            {
                 return;
+            }
 
             lock (_lock)
             {
@@ -219,7 +225,9 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
         {
             ThrowIfDisposed();
             if (!IsConnected || data == null)
+            {
                 return false;
+            }
 
             try
             {
@@ -231,7 +239,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
                 }
                 finally
                 {
-                    _sendLock.Release();
+                    _ = _sendLock.Release();
                 }
             }
             catch (Exception ex)
@@ -245,7 +253,9 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
         {
             ThrowIfDisposed();
             if (!IsConnected || data == null)
+            {
                 return false;
+            }
 
             try
             {
@@ -258,7 +268,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
                 }
                 finally
                 {
-                    _sendLock.Release();
+                    _ = _sendLock.Release();
                 }
             }
             catch (Exception ex)
@@ -272,7 +282,9 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
         {
             ThrowIfDisposed();
             if (!IsConnected)
+            {
                 return null;
+            }
 
             try
             {
@@ -311,12 +323,16 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
         public void Dispose()
         {
             if (_isDisposed)
+            {
                 return;
+            }
 
             lock (_lock)
             {
                 if (_isDisposed)
+                {
                     return;
+                }
 
                 _isDisposed = true;
 
@@ -326,7 +342,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
 
                     if (_receiveTask != null && !_receiveTask.IsCompleted)
                     {
-                        Task.WaitAny(_receiveTask, Task.Delay(1000));
+                        _ = Task.WaitAny(_receiveTask, Task.Delay(1000));
                     }
 
                     _serialPort?.Close();

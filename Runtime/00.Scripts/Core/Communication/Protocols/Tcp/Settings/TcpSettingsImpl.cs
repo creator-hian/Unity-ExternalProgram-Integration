@@ -48,20 +48,36 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Tcp
         public override bool Validate()
         {
             if (!base.Validate())
+            {
                 return false;
+            }
+
             if (LingerSeconds < 0)
+            {
                 return false;
+            }
+
             if (KeepAliveInterval <= 0)
+            {
                 return false;
+            }
+
             if (KeepAliveTime <= 0)
+            {
                 return false;
+            }
+
             if (KeepAliveRetryCount <= 0)
+            {
                 return false;
+            }
+
             if (SendBufferSize <= 0)
+            {
                 return false;
-            if (ReceiveBufferSize <= 0)
-                return false;
-            return true;
+            }
+
+            return ReceiveBufferSize > 0;
         }
     }
 }

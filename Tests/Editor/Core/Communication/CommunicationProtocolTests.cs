@@ -1,6 +1,6 @@
-using NUnit.Framework;
 using System.Threading.Tasks;
 using Hian.ExternalProgram.Tests.Editor.Mocks;
+using NUnit.Framework;
 
 namespace Communication
 {
@@ -20,9 +20,9 @@ namespace Communication
         public async Task Connect_ShouldChangeConnectionState()
         {
             Assert.That(_protocol.IsConnected, Is.False);
-            
+
             bool result = await _protocol.ConnectAsync();
-            
+
             Assert.That(result, Is.True);
             Assert.That(_protocol.IsConnected, Is.True);
         }
@@ -33,9 +33,9 @@ namespace Communication
             byte[] receivedData = null;
             _protocol.OnDataReceived += data => receivedData = data;
 
-            await _protocol.ConnectAsync();
+            _ = await _protocol.ConnectAsync();
             byte[] testData = new byte[] { 1, 2, 3 };
-            await _protocol.SendAsync(testData);
+            _ = await _protocol.SendAsync(testData);
 
             Assert.That(receivedData, Is.EqualTo(testData));
         }
@@ -46,4 +46,4 @@ namespace Communication
             _protocol?.Dispose();
         }
     }
-} 
+}

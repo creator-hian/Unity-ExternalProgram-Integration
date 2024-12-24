@@ -53,20 +53,36 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
         public override bool Validate()
         {
             if (!base.Validate())
+            {
                 return false;
+            }
+
             if (QueueCapacity <= 0)
+            {
                 return false;
+            }
+
             if (MaxPriorityLevels <= 0)
+            {
                 return false;
+            }
+
             if (MessageTtl <= TimeSpan.Zero)
+            {
                 return false;
+            }
+
             if (MaxRetainedMessages < 0)
+            {
                 return false;
+            }
+
             if (BatchSize <= 0)
+            {
                 return false;
-            if (BatchTimeout <= 0)
-                return false;
-            return true;
+            }
+
+            return BatchTimeout > 0;
         }
     }
 }
