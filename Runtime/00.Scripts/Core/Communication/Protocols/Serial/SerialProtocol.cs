@@ -10,7 +10,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Serial
     /// <summary>
     /// 시리얼 통신을 구현하는 프로토콜 클래스입니다.
     /// </summary>
-    public class SerialProtocol : ICommunicationProtocol, IDisposable
+    public class SerialProtocol : IConnectionOrientedProtocol, IDisposable
     {
         private readonly ISerialSettings _settings;
         private readonly SerialPort _serialPort;

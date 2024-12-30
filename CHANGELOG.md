@@ -12,6 +12,21 @@ All notable changes to this project will be documented in this file.
   - **Patch**: 하위 호환성 있는 버그 수정
 - **최신 버전이 상단에, 이전 버전이 하단에 기록됩니다.**
 
+## [0.4.0] - 2024-12-30
+
+### Changed
+
+- 통신 프로토콜 인터페이스 구조 개선
+  - `ICommunicationProtocol`에서 연결 지향적 이벤트들을 분리
+  - 새로운 `IConnectionOrientedProtocol` 인터페이스 추가
+  - TCP, Serial 프로토콜은 `IConnectionOrientedProtocol` 구현
+  - UDP 프로토콜은 비연결성 특성에 맞게 `ICommunicationProtocol`만 구현
+
+### Fixed
+
+- Mock 클래스의 미사용 이벤트에 대한 CS0067 Warning 제거
+  - `MockCommunicationProtocol`에 pragma warning disable 적용
+
 ## [0.1.0] - 2024-12-05
 
 ### Added
