@@ -70,23 +70,36 @@ namespace Hian.ExternalProgram.Core.Communication
         /// <summary>오류 발생 시 발생하는 이벤트</summary>
         event Action<Exception> OnError;
 
-        // 연결 상태 관련 이벤트
-        /// <summary>연결 성공 시 발생하는 이벤트</summary>
-        event Action OnConnected;
-
-        /// <summary>연결 해제 시 발생하는 이벤트</summary>
+        /// <summary>
+        /// 연결이 끊어졌을 때 발생하는 이벤트입니다.
+        /// </summary>
         event Action OnDisconnected;
 
-        /// <summary>예기치 않은 연결 끊김 시 발생하는 이벤트</summary>
+        /// <summary>
+        /// 연결이 끊어진 이유와 함께 발생하는 이벤트입니다.
+        /// </summary>
         event Action<EDisconnectReason> OnConnectionLost;
 
-        /// <summary>전반적인 상태 변경 시 발생하는 이벤트</summary>
+        /// <summary>
+        /// 연결 상태가 변경되었을 때 발생하는 이벤트입니다.
+        /// </summary>
         event Action<ConnectionState> OnStateChanged;
+    }
 
-        // 연결 시도/재시도 관련 이벤트
+    /// <summary>
+    /// 연결 지향적 통신 프로토콜을 위한 인터페이스입니다.
+    /// TCP나 Serial과 같은 연결 지향적 프로토콜에서 사용됩니다.
+    /// </summary>
+    public interface IConnectionOrientedProtocol : ICommunicationProtocol
+    {
+        /// <summary>
+        /// 연결 시도 횟수가 변경될 때 발생하는 이벤트입니다.
+        /// </summary>
         event Action<int> OnConnectionAttempt;
 
-        /// <summary>재연결 시도 중 발생하는 이벤트</summary>
+        /// <summary>
+        /// 재연결 시도 시 대기 시간이 변경될 때 발생하는 이벤트입니다.
+        /// </summary>
         event Action<TimeSpan> OnReconnecting;
     }
 }

@@ -14,12 +14,14 @@ namespace Hian.ExternalProgram.Tests.Editor.Mocks
 
         public event Action<byte[]> OnDataReceived;
         public event Action<Exception> OnError;
+
+        // TODO: 현재 해당 이벤트를 기반으로 테스트를 수행하고 있지 않아 Pragma warning disable 사용
+#pragma warning disable CS0067 // 이벤트가 사용되지 않음
         public event Action OnConnected;
         public event Action OnDisconnected;
         public event Action<EDisconnectReason> OnConnectionLost;
         public event Action<ConnectionState> OnStateChanged;
-        public event Action<int> OnConnectionAttempt;
-        public event Action<TimeSpan> OnReconnecting;
+#pragma warning restore CS0067
 
         public bool Connect()
         {

@@ -39,8 +39,6 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.InMemory
         public event Action OnDisconnected;
         public event Action<EDisconnectReason> OnConnectionLost;
         public event Action<ConnectionState> OnStateChanged;
-        public event Action<int> OnConnectionAttempt;
-        public event Action<TimeSpan> OnReconnecting;
         #endregion
 
         public InMemoryProtocol(string channelId, IInMemorySettings settings = null)

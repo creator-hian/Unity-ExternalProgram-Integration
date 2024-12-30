@@ -11,7 +11,7 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Tcp
     /// TCP 프로토콜을 사용한 통신을 구현하는 클래스입니다.
     /// 이 클래스는 비동기 작업과 스레드 안전을 보장합니다.
     /// </summary>
-    public class TcpProtocol : ICommunicationProtocol, IDisposable
+    public class TcpProtocol : IConnectionOrientedProtocol, IDisposable
     {
         private readonly ITcpSettings _settings;
         private TcpClient _client;

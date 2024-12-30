@@ -39,8 +39,6 @@ namespace Hian.ExternalProgram.Core.Communication.Protocols.Udp
         public event Action OnDisconnected;
         public event Action<EDisconnectReason> OnConnectionLost;
         public event Action<ConnectionState> OnStateChanged;
-        public event Action<int> OnConnectionAttempt;
-        public event Action<TimeSpan> OnReconnecting;
         #endregion
 
         public UdpProtocol(string host, int port, IUdpSettings settings = null)
